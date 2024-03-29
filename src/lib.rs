@@ -15,7 +15,14 @@ pub struct AppSkeleton {
     pub device: wgpu::Device,
     pub queue: wgpu::Queue,
     pub config: wgpu::SurfaceConfiguration,
+    pub screen_size: data::ScreenSize,
 }
+
+//pub struct CustomSurface
+// the idea here is to be able to attach custom surfaces
+// to the application. they render in conjunction with
+// the user interface surface which is managed by the
+// AppSkeleton struct internally
 
 pub trait Application: 'static + Sized {
     fn optional_features() -> wgpu::Features {
@@ -63,6 +70,7 @@ pub async fn build<E: Application>(title: &str) -> AppSkeleton {
     let (adapter, device, queue) = request_adapter::<E>(&instance, &surface).await;
 
     let size = window.inner_size();
+    let screen_size = data::ScreenSize::new(size.width, size.height);
     let config = create_surface_configuration(&surface, &adapter, &size);
     surface.configure(&device, &config);
 
@@ -75,6 +83,7 @@ pub async fn build<E: Application>(title: &str) -> AppSkeleton {
         device,
         queue,
         config,
+        screen_size,
     }
 }
 

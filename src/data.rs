@@ -1,5 +1,25 @@
 #[repr(C)]
 #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct ScreenSize {
+    size: [u32; 2],
+}
+
+impl ScreenSize {
+    pub fn new(x: u32, y: u32) -> Self {
+        Self { size: [x, y] }
+    }
+
+    pub fn update(&mut self, x: u32, y: u32) {
+        self.size = [x, y];
+    }
+
+    pub fn size(&self) -> &[u32; 2] {
+        &self.size
+    }
+}
+
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct Vertex {
     position: [f32; 3],
 }
