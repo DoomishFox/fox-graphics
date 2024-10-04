@@ -198,14 +198,14 @@ fn create_surface_configuration(
 
 // ====== applicaiton run ======
 
-pub fn run<E: Application>(mut app: E, mut state: AppSkeleton) {
+pub fn run<E: Application>(mut app: E, skeleton: AppSkeleton) {
     log::info!("Entering event loop...");
-    state.event_loop.run(move |event, _, control_flow| {
+    skeleton.event_loop.run(move |event, _, control_flow| {
         match event {
             Event::WindowEvent {
                 ref event,
                 window_id,
-            } if window_id == state.window.id() => if !app.input(event) {
+            } if window_id == skeleton.window.id() => if !app.input(event) {
                 match event {
                     WindowEvent::CloseRequested
                     | WindowEvent::KeyboardInput {
@@ -220,29 +220,29 @@ pub fn run<E: Application>(mut app: E, mut state: AppSkeleton) {
                     WindowEvent::Resized(pysical_size) => {
                         if resize_possible(pysical_size) {
                             //size = *pysical_size;
-                            state.config.width = pysical_size.width;
-                            state.config.height = pysical_size.height;
-                            state.surface.configure(&state.device, &state.config);
+                            //skeleton.config.width = pysical_size.width;
+                            //skeleton.config.height = pysical_size.height;
+                            skeleton.surface.configure(&skeleton.device, &skeleton.config);
                         }
                     },
                     WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                         // gotta deference it twice cause apparently its &&mut
                         if resize_possible(*&new_inner_size) {
                             //size = **new_inner_size;
-                            state.config.width = new_inner_size.width;
-                            state.config.height = new_inner_size.height;
-                            state.surface.configure(&state.device, &state.config);
+                            //skeleton.config.width = new_inner_size.width;
+                            //skeleton.config.height = new_inner_size.height;
+                            skeleton.surface.configure(&skeleton.device, &skeleton.config);
                         }
                     },
                     _ => {}
                 }
             },
-            Event::RedrawRequested(window_id) if window_id == state.window.id() => {
-                app.update(&state.queue);
-                match app.render(&state.surface, &state.device, &state.queue) {
+            Event::RedrawRequested(window_id) if window_id == skeleton.window.id() => {
+                app.update(&skeleton.queue);
+                match app.render(&skeleton.surface, &skeleton.device, &skeleton.queue) {
                     Ok(_) => {},
                     // reconfigure surface if lost
-                    Err(wgpu::SurfaceError::Lost) => state.surface.configure(&state.device, &state.config),
+                    Err(wgpu::SurfaceError::Lost) => skeleton.surface.configure(&skeleton.device, &skeleton.config),
                     // out of memory, attempt reset
                     Err(wgpu::SurfaceError::OutOfMemory) => *control_flow = ControlFlow::Exit,
                     // ignore other errors, they'll probably be gone by the next frame
@@ -251,7 +251,7 @@ pub fn run<E: Application>(mut app: E, mut state: AppSkeleton) {
             },
             Event::RedrawEventsCleared => {
                 // manually trigger RedrawRequested otherwise it only triggers once
-                state.window.request_redraw();
+                skeleton.window.request_redraw();
             }
             _ => {}
         }
