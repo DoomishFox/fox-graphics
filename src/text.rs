@@ -1,4 +1,4 @@
-use crate::AppSkeleton;
+use crate::app::{AppBuilder, AppSkeleton, Application};
 
 pub struct GlyphAtlas {
     pub glyph_bind_group_layout: wgpu::BindGroupLayout,

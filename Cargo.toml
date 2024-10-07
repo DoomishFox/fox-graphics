@@ -11,3 +11,5 @@ log = "0.4.19"
 wgpu = "0.16.1"
 winit = "0.28.6"
 bytemuck = { vertion = "1.13.1", features = [ "derive" ] }
+cgmath = "0.18.0" # temporary
+glam = "0.29.0"

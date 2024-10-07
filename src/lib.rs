@@ -1,6 +1,10 @@
 pub mod data;
 pub mod vector;
 pub mod text;
+pub mod app;
+pub mod pipeline;
+
+pub mod camera;
 
 use winit::{
     event::*,
@@ -8,54 +12,10 @@ use winit::{
     window::Window, dpi::PhysicalSize,
 };
 
-pub struct AppSkeleton {
-    pub window: Window,
-    pub event_loop: EventLoop<()>,
-    pub _instance: wgpu::Instance,
-    pub surface: wgpu::Surface,
-    pub adapter: wgpu::Adapter,
-    pub device: wgpu::Device,
-    pub queue: wgpu::Queue,
-    pub config: wgpu::SurfaceConfiguration,
-    pub screen_size: data::ScreenSize,
-}
-
-//pub struct CustomSurface
-// the idea here is to be able to attach custom surfaces
-// to the application. they render in conjunction with
-// the user interface surface which is managed by the
-// AppSkeleton struct internally
-
-pub trait Application: 'static + Sized {
-    fn optional_features() -> wgpu::Features {
-        wgpu::Features::empty()
-    }
-    fn required_features() -> wgpu::Features {
-        wgpu::Features::empty()
-    }
-    fn required_downlevel_capabilities() -> wgpu::DownlevelCapabilities {
-        wgpu::DownlevelCapabilities {
-            flags: wgpu::DownlevelFlags::empty(),
-            shader_model: wgpu::ShaderModel::Sm5,
-            ..wgpu::DownlevelCapabilities::default()
-        }
-    }
-    fn required_limits() -> wgpu::Limits {
-        wgpu::Limits::default()
-    }
-    fn input(&mut self, event: &WindowEvent) -> bool;
-    fn update(&mut self, queue: &wgpu::Queue);
-    fn render(
-        &mut self,
-        surface: &wgpu::Surface,
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-    ) -> Result<(), wgpu::SurfaceError>;
-}
 
 // ====== application build ======
 
-pub async fn build<E: Application>(title: &str) -> AppSkeleton {
+pub async fn build<E: app::Application>(title: &str) -> app::AppSkeleton {
     // required by wgpu
     env_logger::init();
 
@@ -76,7 +36,7 @@ pub async fn build<E: Application>(title: &str) -> AppSkeleton {
     let config = create_surface_configuration(&surface, &adapter, &size);
     surface.configure(&device, &config);
 
-    AppSkeleton {
+    app::AppSkeleton {
         window,
         event_loop,
         _instance: instance,
@@ -115,7 +75,7 @@ fn create_surface(window: &Window, instance: &wgpu::Instance) ->
     }
 }
 
-async fn request_adapter<E: Application>(instance: &wgpu::Instance, surface: &wgpu::Surface) ->
+async fn request_adapter<E: app::Application>(instance: &wgpu::Instance, surface: &wgpu::Surface) ->
     (wgpu::Adapter, wgpu::Device, wgpu::Queue)
 {
     let adapter = instance.request_adapter(
@@ -200,7 +160,7 @@ fn create_surface_configuration(
 
 // ====== applicaiton run ======
 
-pub fn run<E: Application>(mut app: E, mut skeleton: AppSkeleton) {
+pub fn run<E: app::Application>(mut app: E, mut skeleton: app::AppSkeleton) {
     log::info!("Entering event loop...");
     skeleton.event_loop.run(move |event, _, control_flow| {
         match event {
