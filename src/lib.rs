@@ -1,4 +1,6 @@
 pub mod data;
+pub mod vector;
+pub mod text;
 
 use winit::{
     event::*,
@@ -198,7 +200,7 @@ fn create_surface_configuration(
 
 // ====== applicaiton run ======
 
-pub fn run<E: Application>(mut app: E, skeleton: AppSkeleton) {
+pub fn run<E: Application>(mut app: E, mut skeleton: AppSkeleton) {
     log::info!("Entering event loop...");
     skeleton.event_loop.run(move |event, _, control_flow| {
         match event {
@@ -220,8 +222,8 @@ pub fn run<E: Application>(mut app: E, skeleton: AppSkeleton) {
                     WindowEvent::Resized(pysical_size) => {
                         if resize_possible(pysical_size) {
                             //size = *pysical_size;
-                            //skeleton.config.width = pysical_size.width;
-                            //skeleton.config.height = pysical_size.height;
+                            skeleton.config.width = pysical_size.width;
+                            skeleton.config.height = pysical_size.height;
                             skeleton.surface.configure(&skeleton.device, &skeleton.config);
                         }
                     },
@@ -229,8 +231,8 @@ pub fn run<E: Application>(mut app: E, skeleton: AppSkeleton) {
                         // gotta deference it twice cause apparently its &&mut
                         if resize_possible(*&new_inner_size) {
                             //size = **new_inner_size;
-                            //skeleton.config.width = new_inner_size.width;
-                            //skeleton.config.height = new_inner_size.height;
+                            skeleton.config.width = new_inner_size.width;
+                            skeleton.config.height = new_inner_size.height;
                             skeleton.surface.configure(&skeleton.device, &skeleton.config);
                         }
                     },
