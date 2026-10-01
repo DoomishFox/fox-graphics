@@ -1,15 +1,9 @@
 [package]
 name = "fox-graphics"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.95"
 
 [dependencies]
-env_logger = "0.10.0"
-log = "0.4.19"
-wgpu = "0.16.1"
-winit = "0.28.6"
-bytemuck = { vertion = "1.13.1", features = [ "derive" ] }
-cgmath = "0.18.0" # temporary
-glam = "0.29.0"
+wgpu = "30.0"
+bytemuck = { version = "1.25", features = ["derive"] }
